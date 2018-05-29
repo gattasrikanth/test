@@ -105,7 +105,7 @@ for (var c = 0; c < 3000; c++) {
 
 
 
-/*window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
+window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
     //alert(pageUrl);
   __gCrWeb.message.invokeOnHost({'command': 'window.history.willChangeState'});
 
@@ -122,7 +122,8 @@ for (var c = 0; c < 3000; c++) {
     'baseUrl': document.baseURI,
     'pageUrl': pageUrl.toString()
   });
-};*/
+  return;
+};
 
 
 window.history.replaceState( {} , 'foo', '/foo' );
