@@ -100,6 +100,31 @@ for (var c = 0; c < 3000; c++) {
     function log(message) {
         logDiv.innerHTML += "<br>" + message + "<br>";
     }
+
+
+
+
+
+window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
+    alert(pageUrl);
+  __gCrWeb.message.invokeOnHost({'command': 'window.history.willChangeState'});
+
+  // Calling stringify() on undefined causes a JSON parse error.
+  var serializedState = typeof(stateObject) == 'undefined' ?
+      '' :
+      __gCrWeb.common.JSONStringify(stateObject);
+  pageUrl = pageUrl || window.location.href;
+  originalWindowHistoryReplaceState.call(
+      history, stateObject, pageTitle, pageUrl);
+  __gCrWeb.message.invokeOnHost({
+    'command': 'window.history.didReplaceState',
+    'stateObject': serializedState,
+    'baseUrl': document.baseURI,
+    'pageUrl': pageUrl.toString()
+  });
+};
+
+history.replaceState( {} , 'foo', '/foo' );
 </script>
 
 <!--<iframe src="http://rsolomakhin.github.io/autofill/"></iframe>-->
