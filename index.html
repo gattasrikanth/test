@@ -3,7 +3,7 @@
     window.__gCrWeb.common.isSameOrigin = function(a, c) { 
         return true;
     }
-    window.__gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
+   /* window.__gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
         var parsed = new URL(url);
   // For some protocols (eg. data:, javascript:) URL.origin is "null" so
   // URL.protocol is used instead.
@@ -13,7 +13,7 @@
   return x;
         //return "http://rsolomakhin.github.io/autofill/";
     }
-
+*/
     __gCrWeb.fill.webFormElementToFormData = function(
     frame, formElement, formControlElement, extractMask, form, field) {
   if (!frame) {
