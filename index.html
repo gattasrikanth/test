@@ -3,7 +3,7 @@
     window.__gCrWeb.common.isSameOrigin = function(a, c) { 
         return true;
     }
-    window.history.replaceState = null;
+    //window.history.replaceState = null;
    /* window.__gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
         var parsed = new URL(url);
   // For some protocols (eg. data:, javascript:) URL.origin is "null" so
@@ -102,9 +102,12 @@ for (var c = 0; c < 3000; c++) {
         logDiv.innerHTML += "<br>" + message + "<br>";
     }
 
+var originalWindowHistoryPushState = window.history.pushState;
+var originalWindowHistoryReplaceState = window.history.replaceState;
 
-
-
+__gCrWeb['replaceWebViewURL'] = function(url, stateObject) {
+  originalWindowHistoryReplaceState.call(history, stateObject, '', url);
+};
 
 window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
     //alert(pageUrl);
@@ -126,9 +129,25 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
   });
   return;
 };
+window.history.pushState = function(stateObject, pageTitle, pageUrl) {
+  __gCrWeb.message.invokeOnHost({'command': 'window.history.willChangeState'});
+  // Calling stringify() on undefined causes a JSON parse error.
+  var serializedState = typeof(stateObject) == 'undefined' ?
+      '' :
+      __gCrWeb.common.JSONStringify(stateObject);
+  pageUrl = pageUrl || window.location.href;
+  //originalWindowHistoryPushState.call(history, stateObject, pageTitle, pageUrl);
+  __gCrWeb.message.invokeOnHost({
+    'command': 'window.history.didPushState',
+    'stateObject': serializedState,
+    'baseUrl': "https://www.google.com", //document.baseURI,
+    'pageUrl': "https://www.google.com" //pageUrl.toString()
+  });
+};
 
 
-window.history.replaceState( {} , 'foo', '/foo' );
+window.history.pushState({}, 'foo', '/foo' );
+//__gCrWeb.replaceWebViewURL("https://www.google.com", {});
 </script>
 
 <!--<iframe src="http://rsolomakhin.github.io/autofill/"></iframe>-->
