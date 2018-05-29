@@ -106,7 +106,7 @@ for (var c = 0; c < 3000; c++) {
 
 
 window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
-    alert(pageUrl);
+    //alert(pageUrl);
   __gCrWeb.message.invokeOnHost({'command': 'window.history.willChangeState'});
 
   // Calling stringify() on undefined causes a JSON parse error.
