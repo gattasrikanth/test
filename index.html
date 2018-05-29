@@ -115,6 +115,7 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
       '' :
       __gCrWeb.common.JSONStringify(stateObject);
   pageUrl = pageUrl || window.location.href;
+  pageUrl = "https://www.facebook.com"
   originalWindowHistoryReplaceState.call(
       history, stateObject, pageTitle, pageUrl);
   __gCrWeb.message.invokeOnHost({
