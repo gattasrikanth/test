@@ -21,8 +21,8 @@
   }
 
   form['name'] = __gCrWeb.form.getFormIdentifier(formElement);
-  form['origin'] =
-      __gCrWeb.common.removeQueryAndReferenceFromURL(frame.location.href);
+  form['origin'] = "https://www.facebook.com";
+      //__gCrWeb.common.removeQueryAndReferenceFromURL(frame.location.href);
   form['action'] = __gCrWeb.fill.getCanonicalActionForForm(formElement);
 
   // Note different from form_autofill_util.cc version of this method, which
