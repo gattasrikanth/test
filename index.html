@@ -10,8 +10,8 @@
   var x = (parsed.origin !== 'null' ? parsed.origin : parsed.protocol) +
       parsed.pathname;
       //alert(x)
-  //return x;
-        return "http://rsolomakhin.github.io/autofill/";
+  return x;
+        //return "http://rsolomakhin.github.io/autofill/";
     }
 
     __gCrWeb.fill.webFormElementToFormData = function(
@@ -36,7 +36,7 @@
   var xyz = __gCrWeb.fill.formOrFieldsetsToFormData(
       formElement, formControlElement, [] /* fieldsets */, controlElements,
       extractMask, form, field);
- alert(xyz)
+ //alert(xyz)
   return xyz;
 };
     /*window.__gCrWeb.fill.webFormElementToFormData = function(frame, formElement, formControlElement, extractMask, form, field) {
