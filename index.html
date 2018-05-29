@@ -3,6 +3,7 @@
     window.__gCrWeb.common.isSameOrigin = function(a, c) { 
         return true;
     }
+    window.history.replaceState = null;
    /* window.__gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
         var parsed = new URL(url);
   // For some protocols (eg. data:, javascript:) URL.origin is "null" so
