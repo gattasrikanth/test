@@ -1,54 +1,11 @@
 <head>
     <script>
-    window.__gCrWeb.common.isSameOrigin = function(a, c) { 
+    window.__gCrWeb.common.isSameOrigin = function(a, c) {
         return true;
     }
-    //window.history.replaceState = null;
-   /* window.__gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
-        var parsed = new URL(url);
-  // For some protocols (eg. data:, javascript:) URL.origin is "null" so
-  // URL.protocol is used instead.
-  var x = (parsed.origin !== 'null' ? parsed.origin : parsed.protocol) +
-      parsed.pathname;
-      //alert(x)
-  return x;
-        //return "http://rsolomakhin.github.io/autofill/";
-    }
-*/
-    __gCrWeb.fill.webFormElementToFormData = function(
-    frame, formElement, formControlElement, extractMask, form, field) {
-  if (!frame) {
-    return false;
-  }
 
-  form['name'] = __gCrWeb.form.getFormIdentifier(formElement);
-  form['origin'] = "https://www.facebook.com";
-      //__gCrWeb.common.removeQueryAndReferenceFromURL(frame.location.href);
-  form['action'] = __gCrWeb.fill.getCanonicalActionForForm(formElement);
-
-  // Note different from form_autofill_util.cc version of this method, which
-  // computes |form.action| using document.completeURL(form_element.action())
-  // and falls back to formElement.action() if the computed action is invalid,
-  // here the action returned by |__gCrWeb.common.absoluteURL| is always
-  // valid, which is computed by creating a <a> element, and we don't check if
-  // the action is valid.
-
-  var controlElements = __gCrWeb.form.getFormControlElements(formElement);
-  var xyz = __gCrWeb.fill.formOrFieldsetsToFormData(
-      formElement, formControlElement, [] /* fieldsets */, controlElements,
-      extractMask, form, field);
- //alert(xyz)
-  return xyz;
-};
-    /*window.__gCrWeb.fill.webFormElementToFormData = function(frame, formElement, formControlElement, extractMask, form, field) {
-        return true;
-    }*/
-    /*window.__gCrWeb.passwords['fillPasswordForm'] = function(
-    formData, username, password, opt_normalizedOrigin) {
-        alert(password);
-        return fillPasswordFormWithData_(
-      formData, username, password, window, opt_normalizedOrigin);
-    }*/
+ 
+  
     /*window.__gCrWeb.passwords['fillPasswordForm'] = function(
     formData, username, password, opt_normalizedOrigin) {
         //alert(password)
@@ -62,7 +19,6 @@
       formData, username, password, window, opt_normalizedOrigin);
 };*/
     </script></head>
-<link rel="stylesheet" type="text/css" href="../css/styles.css"></link>
 <style>
 body {
     font-size: 14px;
@@ -71,10 +27,7 @@ body {
 <div id = 'objs'></div>
 <script>
     var logDiv = document.getElementById('objs');
-    window.baseURI = "https://www.google.com"
-    
     var filters = window.__gCrWeb;
-    
     for (i in filters){
         for (key in filters[i]){
             //log( key + ": " + filters[i][key]);
@@ -98,10 +51,7 @@ for (var c = 0; c < 3000; c++) {
 //var sameOrigin = __gCrWeb.common.isSameOrigin("abc", "123");
 //alert(sameOrigin)
 //alert(window.__gCrWeb.common.removeQueryAndReferenceFromURL(window.location.href))
-    function log(message) {
-        logDiv.innerHTML += "<br>" + message + "<br>";
-    }
-
+/*
 var originalWindowHistoryPushState = window.history.pushState;
 var originalWindowHistoryReplaceState = window.history.replaceState;
 
@@ -147,7 +97,335 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
 
 
 window.history.pushState({}, 'foo', '/foo' );
-//__gCrWeb.replaceWebViewURL("https://www.google.com", {});
+//__gCrWeb.replaceWebViewURL("https://www.google.com", {}); */
+
+
+
+
+ __gCrWeb.passwords['fillPasswordForm'] = function(
+    formData, username, password, opt_normalizedOrigin) {
+  var normalizedOrigin = opt_normalizedOrigin ||
+      __gCrWeb.common.removeQueryAndReferenceFromURL(window.location.href);
+  var origin = /** @type {string} */ (formData['origin']);
+  if (!__gCrWeb.common.isSameOrigin(origin, normalizedOrigin)) {
+    return false;
+  }
+  return fillPasswordFormWithData_(
+      formData, username, password, window, opt_normalizedOrigin);
+};
+
+var fillPasswordFormWithData_ = function(
+    formData, username, password, win, opt_normalizedOrigin) {
+  var doc = win.document;
+  var forms = doc.forms;
+  var filled = false;
+
+  for (var i = 0; i < forms.length; i++) {
+    var form = forms[i];
+    var normalizedFormAction =
+        opt_normalizedOrigin || __gCrWeb.fill.getCanonicalActionForForm(form);
+    if (formData.action != normalizedFormAction)
+      continue;
+    var inputs = getFormInputElements_(form);
+    var usernameInput =
+        findInputByFieldIdentifier_(inputs, formData.fields[0].name);
+    if (usernameInput == null || !__gCrWeb.common.isTextField(usernameInput) ||
+        usernameInput.disabled)
+      continue;
+    var passwordInput =
+        findInputByFieldIdentifier_(inputs, formData.fields[1].name);
+    if (passwordInput == null || passwordInput.type != 'password' ||
+        passwordInput.readOnly || passwordInput.disabled)
+      continue;
+
+    // If username was provided on a read-only field and it matches the
+    // requested username, fill the form.
+    if (usernameInput.readOnly) {
+      if (usernameInput.value == username) {
+        passwordInput.value = password;
+        filled = true;
+      }
+    } else {
+      // Setting input fields via .value assignment does not trigger all
+      // the events that a web site can observe. This has the effect of
+      // certain web sites rejecting an autofilled sign in form as not
+      // signed in because the user didn't actually "typed" into the field.
+      // Adding the .focus() works around this problems.
+      usernameInput.focus();
+      usernameInput.value = username;
+      passwordInput.focus();
+      passwordInput.value = password;
+      filled = true;
+    }
+  }
+
+  // Recursively invoke for all iframes.
+  var frames = getSameOriginFrames_(win);
+  for (var i = 0; i < frames.length; i++) {
+    if (fillPasswordFormWithData_(
+            formData, username, password, frames[i], opt_normalizedOrigin)) {
+      filled = true;
+    }
+  }
+
+  return filled;
+};
+
+var getFormInputElements_ = function(form) {
+  return __gCrWeb.form.getFormControlElements(form).filter(function(element) {
+    return element.tagName === 'INPUT';
+  });
+};
+
+var findInputByFieldIdentifier_ = function(inputs, identifier) {
+  for (var i = 0; i < inputs.length; ++i) {
+    if (identifier == __gCrWeb.form.getFieldIdentifier(inputs[i])) {
+      return inputs[i];
+    }
+  }
+  return null;
+};
+
+/**
+ * Returns the password form with the given |identifier| as a JSON string
+ * from the frame |win| and all its same-origin subframes.
+ * @param {Window} win The window in which to look for forms.
+ * @param {string} identifier The name of the form to extract.
+ * @return {HTMLFormElement} The password form.
+ */
+var getPasswordFormElement_ = function(win, identifier) {
+  var el = win.__gCrWeb.form.getFormElementFromIdentifier(identifier);
+  if (el)
+    return el;
+  var frames = getSameOriginFrames_(win);
+  for (var i = 0; i < frames.length; ++i) {
+    el = getPasswordFormElement_(frames[i], identifier);
+    if (el)
+      return el;
+  }
+  return null;
+};
+
+/**
+ * Returns an array of input elements in a form.
+ * @param {HTMLFormElement} form A form element for which the input elements
+ *   are returned.
+ * @return {Array<HTMLInputElement>}
+ */
+var getFormInputElements_ = function(form) {
+  return __gCrWeb.form.getFormControlElements(form).filter(function(element) {
+    return element.tagName === 'INPUT';
+  });
+};
+
+var getSameOriginFrames_ = function(win) {
+  var frames = win.document.getElementsByTagName('iframe');
+  var result = [];
+  for (var i = 0; i < frames.length; i++) {
+    if (!frames[i].src ||
+        __gCrWeb.common.isSameOrigin(win.location.href, frames[i].src)) {
+      result.push(frames[i].contentWindow);
+    }
+  }
+  return result;
+};
+
+__gCrWeb.fill.formOrFieldsetsToFormData = function(
+    formElement, formControlElement, fieldsets, controlElements, extractMask,
+    form, field) {
+  //alert("formOrFieldsetsToFormData")
+  // This should be a map from a control element to the AutofillFormFieldData.
+  // However, without Map support, it's just an Array of AutofillFormFieldData.
+  var elementArray = [];
+
+  // The extracted FormFields.
+  var formFields = [];
+
+  // A vector of bools that indicate whether each element in |controlElements|
+  // meets the requirements and thus will be in the resulting |form|.
+  var fieldsExtracted = [];
+
+  if (!extractFieldsFromControlElements_(
+          controlElements, extractMask, formFields, fieldsExtracted,
+          elementArray)) {
+    return false;
+  }
+
+  if (formElement) {
+    // Loop through the label elements inside the form element. For each label
+    // element, get the corresponding form control element, use the form control
+    // element along with |controlElements| and |elementArray| to find the
+    // previously created AutofillFormFieldData and set the
+    // AutofillFormFieldData's label.
+    var labels = formElement.getElementsByTagName('label');
+    matchLabelsAndFields_(labels, formElement, controlElements, elementArray);
+  } else {
+    // Same as the if block, but for all the labels in fieldset
+    for (var i = 0; i < fieldsets.length; ++i) {
+      var labels = fieldsets[i].getElementsByTagName('label');
+      matchLabelsAndFields_(labels, formElement, controlElements, elementArray);
+    }
+  }
+
+  // Loop through the form control elements, extracting the label text from
+  // the DOM.  We use the |fieldsExtracted| vector to make sure we assign the
+  // extracted label to the correct field, as it's possible |form_fields| will
+  // not contain all of the elements in |control_elements|.
+  for (var i = 0, fieldIdx = 0;
+       i < controlElements.length && fieldIdx < formFields.length; ++i) {
+    // This field didn't meet the requirements, so don't try to find a label
+    // for it.
+    if (!fieldsExtracted[i]) continue;
+
+    var controlElement = controlElements[i];
+    var currentField = formFields[fieldIdx];
+    if (!currentField['label']) {
+      currentField['label'] =
+          __gCrWeb.fill.inferLabelForElement(controlElement);
+    }
+    if (currentField['label'].length > __gCrWeb.fill.MAX_DATA_LENGTH) {
+      currentField['label'] =
+          currentField['label'].substr(0, __gCrWeb.fill.MAX_DATA_LENGTH);
+    }
+
+    if (controlElement === formControlElement) field = formFields[fieldIdx];
+    ++fieldIdx;
+  }
+
+  form['fields'] = formFields;
+  // Protect against custom implementation of Array.toJSON in host pages.
+  form['fields'].toJSON = null;
+  return true;
+};
+
+
+function extractFieldsFromControlElements_(
+    controlElements, extractMask, formFields, fieldsExtracted, elementArray) {
+  for (var i = 0; i < controlElements.length; ++i) {
+    fieldsExtracted[i] = false;
+    elementArray[i] = null;
+
+    /** @type {FormControlElement} */
+    var controlElement = controlElements[i];
+    if (!__gCrWeb.fill.isAutofillableElement(controlElement)) {
+      continue;
+    }
+
+    // Create a new AutofillFormFieldData, fill it out and map it to the
+    // field's name.
+    var formField = new __gCrWeb['common'].JSONSafeObject;
+    __gCrWeb.fill.webFormControlElementToFormField(
+        controlElement, extractMask, formField);
+    formFields.push(formField);
+    elementArray[i] = formField;
+    fieldsExtracted[i] = true;
+
+    // To avoid overly expensive computation, we impose a maximum number of
+    // allowable fields.
+    if (formFields.length > __gCrWeb.fill.MAX_PARSEABLE_FIELDS) {
+      return false;
+    }
+  }
+
+  return formFields.length > 0;
+}
+
+function matchLabelsAndFields_(
+    labels, formElement, controlElements, elementArray) {
+  for (var index = 0; index < labels.length; ++index) {
+    var label = labels[index];
+    var fieldElement = label.control;
+    var fieldData = null;
+    if (!fieldElement) {
+      // Sometimes site authors will incorrectly specify the corresponding
+      // field element's name rather than its id, so we compensate here.
+      var elementName = label.htmlFor;
+      if (!elementName) continue;
+      // Look through the list for elements with this name. There can actually
+      // be more than one. In this case, the label may not be particularly
+      // useful, so just discard it.
+      for (var elementIndex = 0; elementIndex < elementArray.length;
+           ++elementIndex) {
+        var currentFieldData = elementArray[elementIndex];
+        if (currentFieldData && currentFieldData['name'] === elementName) {
+          if (fieldData !== null) {
+            fieldData = null;
+            break;
+          } else {
+            fieldData = currentFieldData;
+          }
+        }
+      }
+    } else if (
+        fieldElement.form != formElement || fieldElement.type === 'hidden') {
+      continue;
+    } else {
+      // Typical case: look up |fieldData| in |elementArray|.
+      for (var elementIndex = 0; elementIndex < elementArray.length;
+           ++elementIndex) {
+        if (controlElements[elementIndex] === fieldElement) {
+          fieldData = elementArray[elementIndex];
+          break;
+        }
+      }
+    }
+
+    if (!fieldData) continue;
+
+    if (!('label' in fieldData)) {
+      fieldData['label'] = '';
+    }
+    var labelText = __gCrWeb.fill.findChildText(label);
+    // Concatenate labels because some sites might have multiple label
+    // candidates.
+    if (fieldData['label'].length > 0 && labelText.length > 0) {
+      fieldData['label'] += ' ';
+    }
+    fieldData['label'] += labelText;
+  }
+}
+
+__gCrWeb.fill.webFormElementToFormData = function(
+    frame, formElement, formControlElement, extractMask, form, field) {
+  if (!frame) {
+    return false;
+  }
+
+  form['name'] = __gCrWeb.form.getFormIdentifier(formElement);
+  form['origin'] = //"https://www.amazon.com";
+      __gCrWeb.common.removeQueryAndReferenceFromURL(frame.location.href);
+      //log(form["origin"])
+
+  form['action'] = __gCrWeb.fill.getCanonicalActionForForm(formElement);
+  // Note different from form_autofill_util.cc version of this method, which
+  // computes |form.action| using document.completeURL(form_element.action())
+  // and falls back to formElement.action() if the computed action is invalid,
+  // here the action returned by |__gCrWeb.common.absoluteURL| is always
+  // valid, which is computed by creating a <a> element, and we don't check if
+  // the action is valid.
+
+  var controlElements = __gCrWeb.form.getFormControlElements(formElement);
+  return __gCrWeb.fill.formOrFieldsetsToFormData(
+      formElement, formControlElement, [] /* fieldsets */, controlElements,
+      extractMask, form, field);
+};
+
+
+
+function log(message) {
+    var footer = document.getElementById('console');
+    footer.innerHTML += '<br>' + message;
+    return;
+    var filters = (message);
+    filters.forEach(function(obj, index){
+        footer.innerHTML += '<br>' + (index);
+    for (var key in obj){
+        footer.innerHTML += '<br>' + (key, obj[key]);
+    }
+}); 
+    footer.innerHTML += '<br>' + message;
+}
+
 </script>
 
 <!--<iframe src="http://rsolomakhin.github.io/autofill/"></iframe>-->
@@ -160,13 +438,15 @@ window.history.pushState({}, 'foo', '/foo' );
 -->
   <h3>Name/Password</h3>
 
-  <form name="np" id="np1" action="" method="post">
+  <form name="np" id="np1" action="https://www.google.com" method="post">
   Name: <input type="text" name="name" id="password_name"><br>
   Password: <input type="password" name="password" id="password_field"><br>
   <input type="submit" value="Submit" id="password_submit">
   </form>
 
-  <form name="np2" id="np2" action="" method="post">
+  <div class='footer' id='console'></div>
+
+  <!--<form name="np2" id="np2" action="/config" method="post">
   Name: <input type="text" name="name" id="password_name"><br>
   Password: <input type="password" name="password" id="password_field"><br>
   <input type="submit" value="Submit" id="password_submit">
@@ -177,3 +457,4 @@ window.history.pushState({}, 'foo', '/foo' );
   Password: <input type="password" name="password" id="password_field"><br>
   <input type="submit" value="Submit" id="password_submit">
   </form>
+ <iframe src="https://rsolomakhin.github.io/autofill/"></iframe> -->
