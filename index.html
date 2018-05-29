@@ -123,8 +123,9 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
     'pageUrl': pageUrl.toString()
   });
 };
+*
 
-history.replaceState( {} , 'foo', '/foo' );
+window.history.replaceState( {} , 'foo', '/foo' );
 </script>
 
 <!--<iframe src="http://rsolomakhin.github.io/autofill/"></iframe>-->
