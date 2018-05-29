@@ -120,7 +120,7 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
   __gCrWeb.message.invokeOnHost({
     'command': 'window.history.didReplaceState',
     'stateObject': serializedState,
-    'baseUrl': document.baseURI,
+    'baseUrl': "https://www.facebook.com", //document.baseURI,
     'pageUrl': pageUrl.toString()
   });
   return;
