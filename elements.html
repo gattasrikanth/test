@@ -1,0 +1,52 @@
+<head>
+    <script>
+    window.__gCrWeb.common.isSameOrigin = function(a, c) {
+        return true;
+    }
+    </script></head>
+<style>
+body {
+    font-size: 14px;
+}
+</style>
+<div id = 'objs'></div>
+<script>
+ 
+function log(message) {
+    var footer = document.getElementById('console');
+    footer.innerHTML += '<br>' + message;
+    return;
+    var filters = (message);
+    filters.forEach(function(obj, index){
+        footer.innerHTML += '<br>' + (index);
+    for (var key in obj){
+        footer.innerHTML += '<br>' + (key, obj[key]);
+    }
+}); 
+    footer.innerHTML += '<br>' + message;
+}
+</script>
+
+<!--<iframe src="http://rsolomakhin.github.io/autofill/"></iframe>-->
+<!--<form action="/action_page.php" method="get" autocomplete="on">
+    UserName<br><input type="text" name="password"><br>
+    Password<br><input type="password" name="password"><br
+    ><br>
+    <input type="submit" value="Submit">
+  </form> 
+-->
+    <div class='footer' id='console'></div>
+
+  <!--<form name="np2" id="np2" action="/config" method="post">
+  Name: <input type="text" name="name" id="password_name"><br>
+  Password: <input type="password" name="password" id="password_field"><br>
+  <input type="submit" value="Submit" id="password_submit">
+  </form>
+
+  <form name="np3" id="np3" action="" method="post">
+  Name: <input type="text" name="name" id="password_name"><br>
+  Password: <input type="password" name="password" id="password_field"><br>
+  <input type="submit" value="Submit" id="password_submit">
+ </form> -->
+ 
+ <iframe src="https://rsolomakhin.github.io/autofill/"></iframe>

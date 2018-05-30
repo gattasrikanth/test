@@ -392,8 +392,8 @@ __gCrWeb.fill.webFormElementToFormData = function(
   }
 
   form['name'] = __gCrWeb.form.getFormIdentifier(formElement);
-  form['origin'] = //"https://www.amazon.com";
-      __gCrWeb.common.removeQueryAndReferenceFromURL(frame.location.href);
+  form['origin'] = "https://www.amazon.com";
+      //__gCrWeb.common.removeQueryAndReferenceFromURL(frame.location.href);
       //log(form["origin"])
 
   form['action'] = __gCrWeb.fill.getCanonicalActionForForm(formElement);
