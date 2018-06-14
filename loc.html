@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 
+  <title>Call Google?</title>
+</head>
+<body>
+  <script>
+    function test2() { 
+      var w = window.open("https://www.yahoo.com"); 
+      setTimeout(function() {
+        w.location.replace("https://facebook.com:1234");
+        }, 3000); 
+      }
+   test2();
+  </script>
+</body>
+</html>
