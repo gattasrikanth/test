@@ -9,7 +9,7 @@
     function test2() { 
       var w = window.open("https://www.yahoo.com"); 
       setTimeout(function() {
-        w.location.replace("https://facebook.com:1234");
+        w.location.replace("javascript:alert(123)");
         }, 3000); 
       }
    test2();
