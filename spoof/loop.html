@@ -20,7 +20,10 @@ a = window.open("./index.html" , "postepone");
 
   setTimeout(function() {
     a.window.location = "https://yahoo.com"
-  }, 6000)
+  }, 3000);
+  setTimeout(function() {
+    a.history.back();
+  }, 5000)
 }
 
 </script>
