@@ -12,7 +12,10 @@ function loadpoc() {
 
 a = window.open("./index.html" , "postepone");
 //setTimeout("a.history.back();" , 4000);
-setTimeout("a.history.forward();" , 6000);
+//setTimeout("a.history.forward();" , 6000);
+  setTimeout(function() {
+    a.window.location = "https://yahoo.com"
+  }, 3000)
 }
 
 </script>
