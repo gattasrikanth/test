@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+  <title>Spoofy</title>
+</head>
+<body>
+  <h3 onclick='zoom()'>Tap</h3>
+
+  <script>
+      
+        $(document).keypress(function(e){
+            alert(e)
+    var checkWebkitandIE=(e.which==26 ? 1 : 0);
+    var checkMoz=(e.which==122 && e.ctrlKey ? 1 : 0);
+
+    if (checkWebkitandIE || checkMoz) $("body").append("<p>ctrl+z detected!</p>");
+});
+      
+    function zoom() {
+      //var xyz = window.open('javascript:window.location.href="javascript:alert(123)"', '_self');
+      var z = window.open('https://accounts.google.com/SignUp?service=mail&continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&ltmpl=default', '_self');
+      //var z = window.open('javascript:alert(123)', '_self');
+      setTimeout(function() {
+        //z.location.href="javascript:alert(123)";
+        //z.location.assign("https://www.google.com");
+      }, 4000);
+      setTimeout(function() {
+        //z.location.href="javascript:window.location.href='javascript:alert(123)'";
+        //z.document.write(123)
+        location.reload();
+      }, 3000);
+      //javascript:window.locsation.href='javascript:alert(123)'
+    }
+  </script>
+</body>
+</html>
