@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Spoofy</title>
+</head>
+<body>
+  <h3 onclick='zoom()'>Tap</h3>
+
+  <script>
+    function zoom() {
+      var z = window.open('https://ex.badssl.com');
+      setTimeout(function() {
+        z.location.assign("https://www.google.com");
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
