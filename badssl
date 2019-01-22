@@ -8,7 +8,8 @@
 <body>
   <script>
     setTimeout(function() {
-      window.location.href='https://ex.badssl.com'
+      //window.location.href='https://ex.badssl.com'
+      window.location.href='https://www.xyz.google.com/'
     }, 1000)
     setTimeout(function() {
          alert(123);
