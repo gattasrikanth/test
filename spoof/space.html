@@ -15,5 +15,32 @@
       window.location.assign("https:// amazon.com")
     }
   </script>
+  
+  
+   <script>
+    function cook() {
+      console.log(document.cookie)
+      alert(document.cookie)
+    }
+
+      function orig() {
+      console.log(window.origin)
+      alert(window.origin)
+    }
+</script>
+
+  <h3>Name/Password</h3>
+
+  <form name="np" id="np1" action="https://example.com/" method="post">
+  Name: <input type="text" name="name" id="password_name"><br>
+  Password: <input type="password" name="password" id="password_field"><br>
+  <input type="reset" value="Reset">
+  <input type="submit" value="Submit" id="password_submit">
+  </form>
+  
+  <button onclick='cook()'>Cookie</button>
+  <button onclick='orig()'>Origin</button>
+  
+  
 </body>
 </html>
